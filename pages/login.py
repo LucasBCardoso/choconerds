@@ -23,7 +23,7 @@ def render_layout(message):
                     dbc.Input(id="pwd_login", placeholder="Digite sua senha", type="password", className="form", style={"border-radius":"30px"}),
                     html.Div([
                         #dbc.Button("LOGIN NO TIME GN", id="login_button", className="botaoLogin"),
-                        dmc.Button("ACESSAR O SISTEMA", variant="gradient", leftIcon=DashIconify(icon="mdi:login"), radius="30px", id="login_button", gradient={"from": "indigo", "to": "cyan"},)
+                        dmc.Button("ACESSAR O SISTEMA", variant="gradient", leftSection=DashIconify(icon="mdi:login"), radius="30px", id="login_button", gradient={"from": "indigo", "to": "cyan"},)
                     ], className="d-grid gap-2 d-md-flex justify-content-md-center", style={"margin-bottom":"15px"}),
                     #html.Div([html.Span(message, className="mensagem")], style={"justify-content":"center", "display":"flex"}),
                     html.Label("Não tem cadastro?", style={"justify-content":"center", "display":"flex", "margin-bottom":"5px", "font-size":"13px"}),
@@ -34,7 +34,7 @@ def render_layout(message):
                                 variant="gradient",
                                 gradient={"from": "indigo", "to": "cyan"},
                                 radius="30px",
-                                leftIcon=DashIconify(icon="mdi:register")
+                                leftSection=DashIconify(icon="mdi:register")
                             ),
                         ], href="/register")
                     ],style={"justify-content":"center", "display":"flex"})

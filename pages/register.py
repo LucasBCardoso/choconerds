@@ -33,7 +33,7 @@ def render_layout(message):
                     dbc.Input(id="pwd_register", placeholder="Sua senha", type="password", className="form"),
                     html.Div([
                         #dbc.Button("CADASTRE-SE NO TIME GN", id="register-button", className="botaoRegistro"),
-                        dmc.Button("REALIZAR CADASTRO", variant="gradient", gradient={"from": "indigo", "to": "cyan"}, leftIcon=DashIconify(icon="mdi:register"), radius="30px", id="register-button")
+                        dmc.Button("REALIZAR CADASTRO", variant="gradient", gradient={"from": "indigo", "to": "cyan"}, leftSection=DashIconify(icon="mdi:register"), radius="30px", id="register-button")
                     ], className="d-grid gap-2 d-md-flex justify-content-md-center", style={"margin-bottom":"15px"}),
                     #html.Div([html.Span(message, className="mensagem")], style={"justify-content":"center", "display":"flex"}),
                     html.Label("Já tem cadastro?", style={"justify-content":"center", "display":"flex", "margin-bottom":"5px", "font-size":"13px"}),
@@ -44,7 +44,7 @@ def render_layout(message):
                                 variant="gradient",
                                 gradient={"from": "indigo", "to": "cyan"},
                                 radius="30px",
-                                leftIcon=DashIconify(icon="mdi:login")
+                                leftSection=DashIconify(icon="mdi:login")
                             ),
                         ], href="/login")
                     ],style={"justify-content":"center", "display":"flex"})

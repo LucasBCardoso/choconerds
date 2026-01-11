@@ -23,7 +23,7 @@ global carrinho
 carrinho = []
 
 #INICIO DO APP
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA] + dmc.styles.ALL)
 server = app.server
 server.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///local.db')
 

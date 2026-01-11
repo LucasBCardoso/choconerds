@@ -168,7 +168,7 @@ def render_layout():
             dbc.Row([
                 html.A([
                     html.Div([
-                        dmc.Button("VOLTAR AO INÍCIO", id="back", variant="gradient", leftIcon=DashIconify(icon="material-symbols:home"), radius="30px")
+                        dmc.Button("VOLTAR AO INÍCIO", id="back", variant="gradient", leftSection=DashIconify(icon="material-symbols:home"), radius="30px")
                     ],style={"justify-content":"start", "display":"flex"}),
                 ],href="/"),
             ], style={"margin-top":"20px", "margin-left":"10px","display":"flex", "justify-content":"start"}),
@@ -205,7 +205,7 @@ def render_layout():
 
             #FECHAR PEDIDO
             html.Div([
-                dmc.Button("SALVAR OS DADOS", id="encerrar", style={"border-radius":"30px"}, variant="gradient", gradient={"from": "orange", "to": "red", "deg": 105}, leftIcon=DashIconify(icon="mdi:user-circle")),
+                dmc.Button("SALVAR OS DADOS", id="encerrar", style={"border-radius":"30px"}, variant="gradient", gradient={"from": "orange", "to": "red", "deg": 105}, leftSection=DashIconify(icon="mdi:user-circle")),
             ],className="d-grid gap-2 d-md-flex justify-content-md-center", style={"justify-content":"center", "display":"flex", "margin-top":"0px"}),
 
             #PÓS PEDIDO
@@ -213,7 +213,7 @@ def render_layout():
                 html.Div([
                     dbc.Row(html.P("Dados salvos com sucesso.", className="subtexto6")),
                     dbc.Row(
-                        dmc.Button("ENVIAR O PEDIDO", id="enviaPedido", style={"border-radius":"30px","justify-content":"center", "display":"flex"}, variant="gradient", gradient={"from": "lime", "to": "green", "deg": 105}, leftIcon=DashIconify(icon="material-symbols:send-rounded")),
+                        dmc.Button("ENVIAR O PEDIDO", id="enviaPedido", style={"border-radius":"30px","justify-content":"center", "display":"flex"}, variant="gradient", gradient={"from": "lime", "to": "green", "deg": 105}, leftSection=DashIconify(icon="material-symbols:send-rounded")),
                     )
                 ],id="finalizou",style={"justify-content":"center", "display":"none", "margin-top":"10px"}),
             ],style={"justify-content":"center", "display":"flex","margin-top":"30px"}),

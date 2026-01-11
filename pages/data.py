@@ -241,7 +241,7 @@ def pedidos_no_carrinho():
                                             #     style={"border-radius":"30px"},
                                             #     variant="gradient",
                                             #     gradient={"from": "purple", "to": "red", "deg": 105},
-                                            #     leftIcon=DashIconify(icon="ic:round-remove-shopping-cart")
+                                            #     leftSection=DashIconify(icon="ic:round-remove-shopping-cart")
                                             # )
                                             #],href=f"/remove-item/{carrinho.index(pedido)}")
                                         ]
@@ -314,7 +314,7 @@ def pedidos_no_carrinho():
 #                                         style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"25px", "margin-top":"10px"}
 #                                     ),
 #                                     html.A([
-#                                         dmc.Button("Remover", id="remove", style={"border-radius":"30px"}, variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, leftIcon=DashIconify(icon="ic:round-remove-shopping-cart"))
+#                                         dmc.Button("Remover", id="remove", style={"border-radius":"30px"}, variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, leftSection=DashIconify(icon="ic:round-remove-shopping-cart"))
 #                                     ], href=f"{carrinho.remove(pedido)}")
 
 #                                 ]
@@ -407,13 +407,13 @@ def render_layout(): #(username)
             #MENU LATERAL
             html.Div(
                 [
-                    dmc.Button("ACESSAR O CARRINHO", id="cart", style={"border-radius":"30px"}, variant="gradient", leftIcon=DashIconify(icon="material-symbols:shopping-cart")),
+                    dmc.Button("ACESSAR O CARRINHO", id="cart", style={"border-radius":"30px"}, variant="gradient", leftSection=DashIconify(icon="material-symbols:shopping-cart")),
                     dmc.Drawer(
                         html.Div([
                             pedidos_no_carrinho(), 
                             html.A(
                                 html.Div([
-                                    dmc.Button("FECHAR O PEDIDO", id="cart", style={"border-radius":"30px"}, variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, leftIcon=DashIconify(icon="material-symbols:shopping-cart")),
+                                    dmc.Button("FECHAR O PEDIDO", id="cart", style={"border-radius":"30px"}, variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, leftSection=DashIconify(icon="material-symbols:shopping-cart")),
                                 ], style={"margin-top":"10px","display":"flex", "justify-content":"center"}),
                                 href="/sucesso",
                                 target="_blank",
@@ -469,9 +469,9 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("DARTH VADER", weight=500),
+                                    dmc.Text("DARTH VADER", fw=500),
                                 ],
-                                position="apart",
+                                justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
@@ -480,8 +480,8 @@ def render_layout(): #(username)
                             dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),
                             dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de BRIGADEIRO para fazer a aliança rebelde tremer de medo!",
-                                size="sm",
-                                color="dimmed",
+                                fz="sm",
+                                c="dimmed",
                                 style={"margin-left":"10px", "margin-top":"10px"}
                             ),
                             html.Div([
@@ -506,7 +506,7 @@ def render_layout(): #(username)
                                     mt="md",
                                     radius="30px",
                                     id="brownie-select1",
-                                    leftIcon=DashIconify(icon="material-symbols:shopping-cart"),
+                                    leftSection=DashIconify(icon="material-symbols:shopping-cart"),
                                 ),
                             ],href="/"),
 
@@ -538,9 +538,9 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("GANDALF, O BRANCO", weight=500),
+                                    dmc.Text("GANDALF, O BRANCO", fw=500),
                                 ],
-                                position="apart",
+                                justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
@@ -549,8 +549,8 @@ def render_layout(): #(username)
                             dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),
                             dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de NINHO para derrotar as forças de Sauron e salvar a terra média!",
-                                size="sm",
-                                color="dimmed",
+                                fz="sm",
+                                c="dimmed",
                                 style={"margin-left":"10px", "margin-top":"10px"}
                             ),
                             html.Div([
@@ -574,7 +574,7 @@ def render_layout(): #(username)
                                     mt="md",
                                     radius="30px",
                                     id="brownie-select2",
-                                    leftIcon=DashIconify(icon="material-symbols:shopping-cart"),
+                                    leftSection=DashIconify(icon="material-symbols:shopping-cart"),
                                 ),
                             ],href="/"),
                         ],
@@ -606,9 +606,9 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("SPOCK, O SÁBIO", weight=500),
+                                    dmc.Text("SPOCK, O SÁBIO", fw=500),
                                 ],
-                                position="apart",
+                                justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
@@ -616,8 +616,8 @@ def render_layout(): #(username)
                             dmc.Badge("DUO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"120px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
                             dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),                            dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio DUO (BRIGADEIRO E NINHO) para ir onde ninguém jamais esteve!",
-                                size="sm",
-                                color="dimmed",
+                                fz="sm",
+                                c="dimmed",
                                 style={"margin-left":"10px", "margin-top":"10px"}
                             ),
                             html.Div([
@@ -641,7 +641,7 @@ def render_layout(): #(username)
                                     mt="md",
                                     radius="30px",
                                     id="brownie-select3",
-                                    leftIcon=DashIconify(icon="material-symbols:shopping-cart"),
+                                    leftSection=DashIconify(icon="material-symbols:shopping-cart"),
                                 ),
                             ],href="/"),
                         ],
@@ -673,9 +673,9 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("WOOKIE, O AVENTUREIRO", weight=500),
+                                    dmc.Text("WOOKIE, O AVENTUREIRO", fw=500),
                                 ],
-                                position="apart",
+                                justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
@@ -683,8 +683,8 @@ def render_layout(): #(username)
                             dmc.Badge("DOCE DE LEITE", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"160px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
                             dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),                            dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de DOCE DE LEITE para as suas aventuras em uma galáxia muito, muito distante!",
-                                size="sm",
-                                color="dimmed",
+                                fz="sm",
+                                c="dimmed",
                                 style={"margin-left":"10px", "margin-top":"10px"}
                             ),
                             html.Div([
@@ -708,7 +708,7 @@ def render_layout(): #(username)
                                     mt="md",
                                     radius="30px",
                                     id="brownie-select4",
-                                    leftIcon=DashIconify(icon="material-symbols:shopping-cart"),
+                                    leftSection=DashIconify(icon="material-symbols:shopping-cart"),
                                 ),
                             ],href="/"),
                         ],
@@ -740,9 +740,9 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("SAURON, O SOMBRIO", weight=500),
+                                    dmc.Text("SAURON, O SOMBRIO", fw=500),
                                 ],
-                                position="apart",
+                                justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
@@ -751,8 +751,8 @@ def render_layout(): #(username)
                             dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),
                             dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de NUTELLA para a todos os brownies comandar!",
-                                size="sm",
-                                color="dimmed",
+                                fz="sm",
+                                c="dimmed",
                                 style={"margin-left":"10px", "margin-top":"10px"}
                             ),
                             html.Div([
@@ -776,7 +776,7 @@ def render_layout(): #(username)
                                     mt="md",
                                     radius="30px",
                                     id="brownie-select5",
-                                    leftIcon=DashIconify(icon="material-symbols:shopping-cart"),
+                                    leftSection=DashIconify(icon="material-symbols:shopping-cart"),
                                 ),
                             ],href="/"),
                         ],

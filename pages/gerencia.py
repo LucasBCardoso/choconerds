@@ -103,8 +103,8 @@
 
 #                         # html.A([
 #                         #     html.Div([
-#                         #         #dmc.Button("PERFIL", variant="light", leftIcon=DashIconify(icon="gg:profile"), radius="30px")
-#                         #         html.A([html.Div([dmc.Button("GERENCIAR", variant="light", leftIcon=DashIconify(icon="fluent:settings-32-regular"), radius="30px")], id="escondeAdm", style={'display':'none'},className="botoes-inicio2")],href="/gerencia"),
+#                         #         #dmc.Button("PERFIL", variant="light", leftSection=DashIconify(icon="gg:profile"), radius="30px")
+#                         #         html.A([html.Div([dmc.Button("GERENCIAR", variant="light", leftSection=DashIconify(icon="fluent:settings-32-regular"), radius="30px")], id="escondeAdm", style={'display':'none'},className="botoes-inicio2")],href="/gerencia"),
 #                         #     ], style={'align-self': 'end', "margin-right":"10px", "justify-content":"end"}),
 #                         # ],href="/perfil"),
 
@@ -123,7 +123,7 @@
 #                 # html.Div([
 #                 #     dbc.Col([
 #                 #         dbc.Button("INÍCIO", href="/", className="botaoSair"),
-#                 #         dmc.Button("DADOS DO PERFIL", variant="gradient", leftIcon=DashIconify(icon="gg:profile"), radius="30px")
+#                 #         dmc.Button("DADOS DO PERFIL", variant="gradient", leftSection=DashIconify(icon="gg:profile"), radius="30px")
 #                 #         #dbc.Button("VOLTAR", color="primary", id="voltar1", className="voltar"),
 #                 #     ], width=2, style={"margin-top":"20px", "margin-left":"10px","display":"flex", "justify-content":"start"}),
 #                 # ], style={"display":"flex", "justify-content":"start"}),
@@ -131,7 +131,7 @@
 #                 dbc.Row([
 #                     html.A([
 #                         html.Div([
-#                             dmc.Button("VOLTAR AO INÍCIO", variant="gradient", leftIcon=DashIconify(icon="material-symbols:home"), radius="30px")
+#                             dmc.Button("VOLTAR AO INÍCIO", variant="gradient", leftSection=DashIconify(icon="material-symbols:home"), radius="30px")
 #                         ],style={"justify-content":"start", "display":"flex"}),
 #                     ],href="/"),
 #                 ], style={"margin-top":"20px", "margin-left":"10px","display":"flex", "justify-content":"start"}),

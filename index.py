@@ -9,17 +9,18 @@ from pages import login, register, data, perfil, gerencia, finalizar, sucesso
 # login_manager.login_view = '/login'
 
 # =========  Layout  =========== #
-app.layout = html.Div(children=[
-    dbc.Row([
-        dbc.Col([
-            dcc.Location(id="base-url", refresh=False), #gestao de páginas
-            dcc.Store(id="login-state", data=""),
-            dcc.Store(id="register-state", data=""),
-            html.Div(id="page-content")
-        ]),
-    ])
-#], fluid=True)
-], style={"padding": "0px"})
+app.layout = dmc.MantineProvider(
+    html.Div(children=[
+        dbc.Row([
+            dbc.Col([
+                dcc.Location(id="base-url", refresh=False), #gestao de páginas
+                dcc.Store(id="login-state", data=""),
+                dcc.Store(id="register-state", data=""),
+                html.Div(id="page-content")
+            ]),
+        ])
+    ], style={"padding": "0px"})
+)
 
 #CALLBACKS
 #======================================================
@@ -90,4 +91,4 @@ def render_page_content2(pathname, register_state):
 
 #APP RUN
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
