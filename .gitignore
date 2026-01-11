@@ -1,0 +1,28 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+env/
+.venv/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+app.log
+
+# Flask session
+flask_session/
+
+# Database
+*.db
+*.sqlite
+
+# Dump files
+*.dump
