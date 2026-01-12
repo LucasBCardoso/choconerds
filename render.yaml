@@ -12,10 +12,12 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn index:server --bind 0.0.0.0:$PORT
+    startCommand: gunicorn index:server --bind 0.0.0.0:10000 --workers 4
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.9
+      - key: PORT
+        value: 10000
       - key: DATABASE_URL
         fromDatabase:
           name: choconerds-db
