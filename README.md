@@ -20,12 +20,14 @@ Choco Nerds é um e-commerce de brownies temáticos, desenvolvido com Python e D
 ## 📦 Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/seu-usuario/choconerds.git
 cd choconerds
 ```
 
 2. Crie um ambiente virtual:
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/macOS
@@ -34,17 +36,20 @@ venv\Scripts\activate  # Windows
 ```
 
 3. Instale as dependências:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 4. Configure as variáveis de ambiente:
+
 ```bash
 cp .env.example .env
 # Edite o arquivo .env com suas configurações
 ```
 
 5. Execute a aplicação:
+
 ```bash
 python index.py
 ```
@@ -53,10 +58,10 @@ python index.py
 
 ## 🔧 Variáveis de Ambiente
 
-| Variável | Descrição |
-|----------|-----------|
+| Variável       | Descrição                             |
+| -------------- | ------------------------------------- |
 | `DATABASE_URL` | URL de conexão com o banco PostgreSQL |
-| `SECRET_KEY` | Chave secreta para sessões Flask |
+| `SECRET_KEY`   | Chave secreta para sessões Flask      |
 
 ## 📁 Estrutura do Projeto
 
@@ -90,6 +95,7 @@ choconerds/
 ## 👤 Autor
 
 **Lucas Cardoso**
+
 - Website: [lucasbcardoso.com.br](https://www.lucasbcardoso.com.br)
 
 ## � Deploy no Render
@@ -101,6 +107,7 @@ choconerds/
 3. Clique em **New** → **Blueprint** e conecte seu repositório
 
 4. O Render vai detectar o `render.yaml` e configurar automaticamente:
+
    - Banco de dados PostgreSQL
    - Serviço web Python
    - Variáveis de ambiente
@@ -110,6 +117,7 @@ choconerds/
 ### Deploy Manual
 
 1. Crie um **Web Service** no Render:
+
    - **Environment**: Python 3
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `gunicorn index:server --bind 0.0.0.0:$PORT`

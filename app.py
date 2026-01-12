@@ -23,8 +23,20 @@ global carrinho
 carrinho = []
 
 #INICIO DO APP
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA] + dmc.styles.ALL)
+app = dash.Dash(__name__, 
+    external_stylesheets=[dbc.themes.LITERA] + dmc.styles.ALL,
+    assets_folder='assets',
+    suppress_callback_exceptions=True
+)
 server = app.server
+
+# Configurar Flask para servir arquivos estáticos da pasta 'static'
+from flask import send_from_directory
+
+@server.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
+
 server.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///local.db')
 
 #SESSÃO DE USUARIO
@@ -34,7 +46,6 @@ server.config['SESSION_COOKIE_NAME'] = 'my-session'
 server.config['PERMANENT_SESSION_LIFETIME'] = 365 * 24 * 60 * 60 * 10  # 10 years
 
 server.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(12))
-app.config.suppress_callback_exceptions = True #True
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 session = Session(server)

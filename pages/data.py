@@ -33,7 +33,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from flask_login import logout_user, current_user
+# from flask_login import logout_user, current_user
 
 from dash_bootstrap_templates import load_figure_template
 load_figure_template(["litera"])
