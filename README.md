@@ -92,7 +92,33 @@ choconerds/
 **Lucas Cardoso**
 - Website: [lucasbcardoso.com.br](https://www.lucasbcardoso.com.br)
 
-## 📝 Licença
+## � Deploy no Render
+
+1. Faça fork deste repositório no GitHub
+
+2. Acesse [render.com](https://render.com) e crie uma conta
+
+3. Clique em **New** → **Blueprint** e conecte seu repositório
+
+4. O Render vai detectar o `render.yaml` e configurar automaticamente:
+   - Banco de dados PostgreSQL
+   - Serviço web Python
+   - Variáveis de ambiente
+
+5. Clique em **Apply** e aguarde o deploy
+
+### Deploy Manual
+
+1. Crie um **Web Service** no Render:
+   - **Environment**: Python 3
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn index:server --bind 0.0.0.0:$PORT`
+
+2. Adicione as variáveis de ambiente:
+   - `DATABASE_URL` - URL do PostgreSQL
+   - `SECRET_KEY` - Chave secreta (gere uma aleatória)
+
+## �📝 Licença
 
 Este projeto está sob a licença MIT.
 

@@ -33,7 +33,7 @@ server.config['SESSION_FILE_DIR'] = '/tmp/flask_session'
 server.config['SESSION_COOKIE_NAME'] = 'my-session'
 server.config['PERMANENT_SESSION_LIFETIME'] = 365 * 24 * 60 * 60 * 10  # 10 years
 
-server.config['SECRET_KEY'] = os.urandom(12)
+server.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(12))
 app.config.suppress_callback_exceptions = True #True
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

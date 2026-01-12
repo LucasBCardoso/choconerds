@@ -1,0 +1,24 @@
+databases:
+  - name: choconerds-db
+    databaseName: choconerds
+    user: choconerds
+    plan: free
+    region: oregon
+
+services:
+  - type: web
+    name: choconerds
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn index:server --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.9
+      - key: DATABASE_URL
+        fromDatabase:
+          name: choconerds-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
