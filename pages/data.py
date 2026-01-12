@@ -138,9 +138,9 @@ produtos = pd.DataFrame({
         "Brownie 6X6 com muuuuito recheio DUO (BRIGADEIRO E NINHO) para ir onde ninguém jamais esteve!",
         "Brownie 6X6 com muuuuito recheio de DOCE DE LEITE para as suas aventuras em uma galáxia muito, muito distante!",
         "Brownie 6X6 com muuuuito recheio de NUTELLA para a todos os brownies comandar!"],
-    5:["/static/p1.png","/static/p2.png","/static/p3.png","/static/p4.png","/static/p5.png"],
-    6:["/static/br0.jpg","/static/br1.jpg","/static/br2.jpg","/static/br0.jpg","/static/br0.jpg"],
-    #7:["/static/brigadeiro.png","/static/ninho.png","/static/duo.png"]
+    5:["/assets/p1.png","/assets/p2.png","/assets/p3.png","/assets/p4.png","/assets/p5.png"],
+    6:["/assets/br0.jpg","/assets/br1.jpg","/assets/br2.jpg","/assets/br0.jpg","/assets/br0.jpg"],
+    #7:["/assets/brigadeiro.png","/assets/ninho.png","/assets/duo.png"]
 })
 
 #carrinho = []
@@ -386,7 +386,7 @@ def render_layout(): #(username)
                 dmc.Grid(children=[
 
                     html.Div([
-                        dbc.CardImg(src="/static/logo.png", class_name="logotipo"),
+                        dbc.CardImg(src="/assets/logo.png", class_name="logotipo"),
                     ], style={'textAlign': 'center'},className="logo-agenda"),  
 
                 ],justify="center",align="center"),
@@ -461,11 +461,11 @@ def render_layout(): #(username)
                                     items=[
                                         {
                                             "key": "1",
-                                            "src": "/static/p1.png",
+                                            "src": "/assets/p1.png",
                                         },
                                         {
                                             "key": "2",
-                                            "src": "/static/br0.jpg",
+                                            "src": "/assets/br0.jpg",
                                         },
                                     ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
@@ -532,11 +532,11 @@ def render_layout(): #(username)
                                     items=[
                                         {
                                             "key": "1",
-                                            "src": "/static/p2.png",
+                                            "src": "/assets/p2.png",
                                         },
                                         {
                                             "key": "2",
-                                            "src": "/static/br1.jpg",
+                                            "src": "/assets/br1.jpg",
                                         },
                                     ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
@@ -601,11 +601,11 @@ def render_layout(): #(username)
                                     items=[
                                         {
                                             "key": "1",
-                                            "src": "/static/p3.png",
+                                            "src": "/assets/p3.png",
                                         },
                                         {
                                             "key": "2",
-                                            "src": "/static/br2.jpg",
+                                            "src": "/assets/br2.jpg",
                                         },
 
                                     ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
@@ -671,11 +671,11 @@ def render_layout(): #(username)
                                     items=[
                                         {
                                             "key": "1",
-                                            "src": "/static/p4.png",
+                                            "src": "/assets/p4.png",
                                         },
                                         {
                                             "key": "2",
-                                            "src": "/static/br2.jpg",
+                                            "src": "/assets/br2.jpg",
                                         },
 
                                     ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
@@ -741,11 +741,11 @@ def render_layout(): #(username)
                                     items=[
                                         {
                                             "key": "1",
-                                            "src": "/static/p5.png",
+                                            "src": "/assets/p5.png",
                                         },
                                         {
                                             "key": "2",
-                                            "src": "/static/br0.jpg",
+                                            "src": "/assets/br0.jpg",
                                         },
 
                                     ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
