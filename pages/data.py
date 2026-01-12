@@ -179,84 +179,87 @@ def whatsapp():
 
 def pedidos_no_carrinho():
     order_elements = []
+    
+    if not carrinho:
+        return html.Div([
+            html.P("Seu carrinho está vazio.", style={"fontFamily": "Arial", "textAlign": "center", "color": "#666", "padding": "20px"})
+        ])
+    
     for pedido in carrinho:
-        detalhes = pedido.split('\n')
-        name = detalhes[0].lower().split(',')[0].strip('*')
-        quantity = detalhes[0].split(':')[1].strip()
-        flavor = detalhes[1].split(': ')[1]
-        total = detalhes[2].split(': ')[1]
+        try:
+            detalhes = pedido.split('\n')
+            name = detalhes[0].lower().split(',')[0].strip('*')
+            quantity = detalhes[0].split(':')[1].strip() if ':' in detalhes[0] else "1"
+            flavor = detalhes[1].split(': ')[1] if len(detalhes) > 1 and ': ' in detalhes[1] else ""
+            total = detalhes[2].split(': ')[1] if len(detalhes) > 2 and ': ' in detalhes[2] else ""
 
-        if name == "darth vader":
-            imagem = produtos.iloc[0][5]
-        
-        elif name == "gandalf":
-            imagem = produtos.iloc[1][5]
+            if name == "darth vader":
+                imagem = produtos.iloc[0][5]
+            
+            elif name == "gandalf":
+                imagem = produtos.iloc[1][5]
 
-        elif name == "spock":
-            imagem = produtos.iloc[2][5]
+            elif name == "spock":
+                imagem = produtos.iloc[2][5]
 
-        elif name == "wookie":
-            imagem = produtos.iloc[3][5]
+            elif name == "wookie":
+                imagem = produtos.iloc[3][5]
 
-        elif name == "sauron":
-            imagem = produtos.iloc[4][5]
+            elif name == "sauron":
+                imagem = produtos.iloc[4][5]
+            else:
+                imagem = produtos.iloc[0][5]
 
-        order_element = html.Div(
-            id=f"item-{carrinho.index(pedido)}",
-            children=[
-                dbc.Card(
-                    [
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.CardImg(
-                                        src=f"{imagem}",
-                                        className="img-fluid rounded-start",
+            order_element = html.Div(
+                id=f"item-{carrinho.index(pedido)}",
+                children=[
+                    dbc.Card(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        dbc.CardImg(
+                                            src=f"{imagem}",
+                                            className="img-fluid rounded-start",
+                                        ),
+                                        className="col-md-4",
                                     ),
-                                    className="col-md-4",
-                                ),
-                                dbc.Col(
-                                    dbc.CardBody(
-                                        [
-                                            html.H6(f"{name}", style={"margin-bottom":"10px"}),
-                                            html.P([
-                                                    f"Quantidade: {quantity}",
-                                                ],
-                                                style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"13px", "margin-bottom":"-5px"}
-                                            ),
-                                            html.P([
-                                                    f"Sabor: {flavor}",
-                                                ],
-                                                style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"13px", "margin-bottom":"-5px"}
-                                            ),
-                                            html.P([
-                                                    f"Total: {total}",
-                                                ],
-                                                style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"18px", "margin-top":"10px"}
-                                            ),
-                                            #html.A([
-                                            # dmc.Button(
-                                            #     "Remover",
-                                            #     id=f"remove-{carrinho.index(pedido)}",
-                                            #     style={"border-radius":"30px"},
-                                            #     variant="gradient",
-                                            #     gradient={"from": "purple", "to": "red", "deg": 105},
-                                            #     leftSection=DashIconify(icon="ic:round-remove-shopping-cart")
-                                            # )
-                                            #],href=f"/remove-item/{carrinho.index(pedido)}")
-                                        ]
+                                    dbc.Col(
+                                        dbc.CardBody(
+                                            [
+                                                html.H6(f"{name}", style={"margin-bottom":"10px"}),
+                                                html.P([
+                                                        f"Quantidade: {quantity}",
+                                                    ],
+                                                    style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"13px", "margin-bottom":"-5px"}
+                                                ),
+                                                html.P([
+                                                        f"Sabor: {flavor}",
+                                                    ],
+                                                    style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"13px", "margin-bottom":"-5px"}
+                                                ),
+                                                html.P([
+                                                        f"Total: {total}",
+                                                    ],
+                                                    style={"font-family":"Arial, Helvetica, sans-serif", "font-size":"18px", "margin-top":"10px"}
+                                                ),
+                                            ]
+                                        ),
+                                        className="col-md-8",
                                     ),
-                                    className="col-md-8",
-                                ),
-                            ],
-                            className="g-0 d-flex align-items-center"
-                        )
-                    ],
-                    className="mb-3"
-                )
-            ]
-        )
-        order_elements.append(order_element)
+                                ],
+                                className="g-0 d-flex align-items-center"
+                            )
+                        ],
+                        className="mb-3"
+                    )
+                ]
+            )
+            order_elements.append(order_element)
+        except Exception as e:
+            logging.error(f"Erro ao processar pedido: {e}")
+            continue
+    
     return html.Div(order_elements)
 
 
@@ -469,23 +472,25 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("DARTH VADER", fw=500),
+                                    dmc.Text("DARTH VADER", fw=500, style={"fontFamily": "Arial"}),
                                 ],
                                 justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
                             ),
-                            dmc.Badge("BRIGADEIRO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"140px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
-                            dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),
+                            dmc.Group([
+                                dmc.Badge("BRIGADEIRO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                                dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                            ], gap="xs", style={"margin-left":"10px"}),
                             dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de BRIGADEIRO para fazer a aliança rebelde tremer de medo!",
                                 fz="sm",
                                 c="dimmed",
-                                style={"margin-left":"10px", "margin-top":"10px"}
+                                style={"margin-left":"10px", "margin-top":"10px", "fontFamily": "Arial"}
                             ),
                             html.Div([
-                                html.P("Quantas unidades?",className="subtexto6"),
+                                html.P("Quantas unidades?",className="subtexto6", style={"fontFamily": "Arial"}),
                             ], style={"display":"flex", "justify-content":"center", "margin-top":"10px", "margin-bottom":"-5px"}),
                             html.Div([
                                 dmc.NumberInput(
@@ -538,23 +543,25 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("GANDALF, O BRANCO", fw=500),
+                                    dmc.Text("GANDALF, O BRANCO", fw=500, style={"fontFamily": "Arial"}),
                                 ],
                                 justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
                             ),
-                            dmc.Badge("NINHO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"120px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
-                            dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),
+                            dmc.Group([
+                                dmc.Badge("NINHO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                                dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                            ], gap="xs", style={"margin-left":"10px"}),
                             dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de NINHO para derrotar as forças de Sauron e salvar a terra média!",
                                 fz="sm",
                                 c="dimmed",
-                                style={"margin-left":"10px", "margin-top":"10px"}
+                                style={"margin-left":"10px", "margin-top":"10px", "fontFamily": "Arial"}
                             ),
                             html.Div([
-                                html.P("Quantas unidades?",className="subtexto6"),
+                                html.P("Quantas unidades?",className="subtexto6", style={"fontFamily": "Arial"}),
                             ], style={"display":"flex", "justify-content":"center", "margin-top":"10px", "margin-bottom":"-5px"}),
                             html.Div([
                                 dmc.NumberInput(
@@ -606,22 +613,25 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("SPOCK, O SÁBIO", fw=500),
+                                    dmc.Text("SPOCK, O SÁBIO", fw=500, style={"fontFamily": "Arial"}),
                                 ],
                                 justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
                             ),
-                            dmc.Badge("DUO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"120px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
-                            dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),                            dmc.Text(
+                            dmc.Group([
+                                dmc.Badge("DUO", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                                dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                            ], gap="xs", style={"margin-left":"10px"}),
+                            dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio DUO (BRIGADEIRO E NINHO) para ir onde ninguém jamais esteve!",
                                 fz="sm",
                                 c="dimmed",
-                                style={"margin-left":"10px", "margin-top":"10px"}
+                                style={"margin-left":"10px", "margin-top":"10px", "fontFamily": "Arial"}
                             ),
                             html.Div([
-                                html.P("Quantas unidades?",className="subtexto6"),
+                                html.P("Quantas unidades?",className="subtexto6", style={"fontFamily": "Arial"}),
                             ], style={"display":"flex", "justify-content":"center", "margin-top":"10px", "margin-bottom":"-5px"}),
                             html.Div([
                                 dmc.NumberInput(
@@ -673,22 +683,25 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("WOOKIE, O AVENTUREIRO", fw=500),
+                                    dmc.Text("WOOKIE, O AVENTUREIRO", fw=500, style={"fontFamily": "Arial"}),
                                 ],
                                 justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
                             ),
-                            dmc.Badge("DOCE DE LEITE", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"160px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
-                            dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),                            dmc.Text(
+                            dmc.Group([
+                                dmc.Badge("DOCE DE LEITE", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                                dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                            ], gap="xs", style={"margin-left":"10px"}),
+                            dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de DOCE DE LEITE para as suas aventuras em uma galáxia muito, muito distante!",
                                 fz="sm",
                                 c="dimmed",
-                                style={"margin-left":"10px", "margin-top":"10px"}
+                                style={"margin-left":"10px", "margin-top":"10px", "fontFamily": "Arial"}
                             ),
                             html.Div([
-                                html.P("Quantas unidades?",className="subtexto6"),
+                                html.P("Quantas unidades?",className="subtexto6", style={"fontFamily": "Arial"}),
                             ], style={"display":"flex", "justify-content":"center", "margin-top":"10px", "margin-bottom":"-5px"}),
                             html.Div([
                                 dmc.NumberInput(
@@ -740,23 +753,25 @@ def render_layout(): #(username)
                             ),
                             dmc.Group(
                                 [
-                                    dmc.Text("SAURON, O SOMBRIO", fw=500),
+                                    dmc.Text("SAURON, O SOMBRIO", fw=500, style={"fontFamily": "Arial"}),
                                 ],
                                 justify="space-between",
                                 mt="md",
                                 mb="xs",
                                 style={"margin-left":"10px"}
                             ),
-                            dmc.Badge("NUTELLA", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"width":"120px", "font-size":"15px","padding":"15px", "margin-left":"10px"}),
-                            dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"width":"100px", "font-size":"16px","padding":"15px", "margin-left":"10px"}),
+                            dmc.Group([
+                                dmc.Badge("NUTELLA", variant="gradient", gradient={"from": "purple", "to": "red", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                                dmc.Badge("R$ 6,00", color="green", variant="gradient", gradient={"from": "teal", "to": "lime", "deg": 105}, style={"font-size":"14px","padding":"12px"}),
+                            ], gap="xs", style={"margin-left":"10px"}),
                             dmc.Text(
                                 "Brownie 6X6 com muuuuito recheio de NUTELLA para a todos os brownies comandar!",
                                 fz="sm",
                                 c="dimmed",
-                                style={"margin-left":"10px", "margin-top":"10px"}
+                                style={"margin-left":"10px", "margin-top":"10px", "fontFamily": "Arial"}
                             ),
                             html.Div([
-                                html.P("Quantas unidades?",className="subtexto6"),
+                                html.P("Quantas unidades?",className="subtexto6", style={"fontFamily": "Arial"}),
                             ], style={"display":"flex", "justify-content":"center", "margin-top":"10px", "margin-bottom":"-5px"}),
                             html.Div([
                                 dmc.NumberInput(
@@ -818,7 +833,7 @@ def render_layout(): #(username)
                 #dmc.NotificationsProvider(html.Div(id="ntPreAgenda")),
 
                 html.Div([
-                    html.P("2023 v1.05 | Choco Nerds!",style={"font-size":"10px"},className="escolhas2"),
+                    html.P("2026 v2.0 | Choco Nerds!",style={"font-size":"10px"},className="escolhas2"),
                 ],className="d-grid gap-2 d-md-flex justify-content-md-center", style={"justify-content":"center", "display":"flex"}),
             
             ],className="content"),
@@ -829,14 +844,15 @@ def render_layout(): #(username)
         ], style={"display":"block"}, id="acessoTotal"),
         html.Div(id="bloqueado"),
         
-        #footer
-        dbc.Row([
-            html.A([
-                html.Div([ #ri:logout-box-line
-                    dbc.CardImg(src="/static/minilc.png", class_name="logotipo2"),
-                ], style={'textAlign': 'center'}),
-            ],href="https://lucapps.studio"),
-        ], justify="center", style={"display":"flex", "justify-content":"center"}, class_name="lowbar2"),
+        # Footer
+        html.Div([
+            html.A(
+                "Criado por Lucas Cardoso",
+                href="https://www.lucasbcardoso.com.br",
+                target="_blank",
+                style={"fontFamily": "Arial", "fontSize": "12px", "color": "#666", "textDecoration": "none"}
+            ),
+        ], style={"display":"flex", "justify-content":"center", "padding":"20px"}),
     ])
     return template
 

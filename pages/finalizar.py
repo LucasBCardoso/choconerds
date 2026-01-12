@@ -12,7 +12,6 @@ from werkzeug.security import generate_password_hash
 from app import *
 import numpy as np
 import pandas as pd
-from IPython.display import display
 import plotly.express as px
 import plotly.graph_objects as go
 
