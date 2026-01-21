@@ -7,28 +7,17 @@ dash-iconify>=0.1.2
 
 # Flask
 Flask>=3.0.0
-Flask-Caching>=2.3.0
-Flask-Login>=0.6.3
-Flask-SQLAlchemy>=3.1.0
-Flask-Session>=0.8.0
 gunicorn>=23.0.0
 
-# Database
-psycopg2-binary>=2.9.9
-SQLAlchemy>=2.0.0
-
 # Data processing
-numpy>=1.26.0
 pandas>=2.2.0
-openpyxl>=3.1.0
+numpy>=1.26.0
 
 # Visualization
 plotly>=5.24.0
 Pillow>=10.4.0
 
-# Security
-Werkzeug>=3.0.0
+# HTTP & API
+requests>=2.32.0
 
 # Utilities
-requests>=2.32.0
-python-dateutil>=2.9.0

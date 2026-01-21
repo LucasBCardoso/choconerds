@@ -1,108 +1,59 @@
-#======================================================================
-#ATUALIZAÇÕES PARA FAZER:
-#Atualizar callback ADM [x]
-#Notificação de vencimento [x]
-#Remover quem cancelou e finalizou o treino da lista do dia [x]
-#Ordenar resultados na página de gerencia [x]
-#Contadores no sistema [x]
-#Acesso de senha por usuário [x]
-#Número de treinos do aluno [x]
-#Como o aluno se sente geralmente pós treino[x]
-#Gráfico com histórico de treinos [x]
-#Função lista de espera para até 3 vagas []
-#Avaliação física []
-#Alunos experimentais []
-#Possibilidade de alterar os horários de cada dia (segunda a sábado) []
-#Alterar logotipo, dados da empresa, imagens de aviso etc []
-#======================================================================
-
 from dash import html, dcc, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 import dash
-import sqlite3
 from dash_iconify import DashIconify
-
 from dash.exceptions import PreventUpdate
 
 from app import *
+from utils import get_products, get_schedules, get_company_info, save_order_to_gist
 
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-# from flask_login import logout_user, current_user
-
 from dash_bootstrap_templates import load_figure_template
 load_figure_template(["litera"])
 
-import requests
-import json
+import urllib.parse
 import logging
 
-import urllib.parse
-#The urllib.parse.quote() function is used to URL-encode the text string, so that any special characters are properly encoded and won't cause issues with the API call
-
-# url = 'http://127.0.0.1:8050/'
-# response = requests.get(url)
-
-# import sys
-# sys.setrecursionlimit(2000)
-
 from datetime import date, datetime, timedelta, time
+
 hora = datetime.now()
-numero_data = date.today().weekday() #data
+numero_data = date.today().weekday()
 dia_da_semana = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
 hoje = date.today()
 dia = dia_da_semana[numero_data]
-#dia = "Quarta"
 numero_data2 = (date.today()+timedelta(1)).weekday()
 dia2 = dia_da_semana[numero_data2]
 amanha = date.today()+timedelta(1)
 horaAtual = datetime.now().time().strftime('%H:%M:%S')
-#print(horaAtual)
+
+# Carrega dados do Gist
+company_info = get_company_info()
+horarios = get_schedules()
+produtos = get_products()
 
 def data_atual():
     return html.P("Hoje é {}, {}/{}/{}".format(dia_da_semana[numero_data], hoje.day, hoje.month, hoje.year), className="subtexto3", style={"font-family":"Arial", "display":"flex", "justify-content":"center"})
-# currentTime = datetime.now().time()
-# endTime = datetime.time(17,40,0)
 
 def data_atual2():
     return html.P("Selecione o seu treino para: {}, {}/{}/{}".format(dia_da_semana[numero_data], hoje.day, hoje.month, hoje.year), className="subtexto5", style={"font-family":"Arial", "display":"flex", "justify-content":"center"})
-
 
 import datetime as dt  
 def isNowInTimePeriod(startTime, endTime, nowTime): 
     if startTime < endTime: 
         return nowTime >= startTime and nowTime <= endTime 
     else: 
-        #Over midnight: 
         return nowTime >= startTime or nowTime <= endTime 
-
-#db horário de treinos
-horarios = pd.DataFrame({
-
-    "Segunda":[" ","08:30"," ","19:00","20:00"],
-    #"Segunda":[" "," "," ","19:00","20:00"],
-    #"Terça":["Não há treinos hoje."," "," "," "," "],
-    "Terça":[" "," "," ","19:00","20:00"],
-    "Quarta":[" ","08:30"," ","19:00","20:00"],
-    #"Quarta":[" "," "," ","19:00","20:00"],
-    "Quinta":[" ","08:30"," ","19:00"," "],
-    "Sexta":[" ","08:30"," ","19:00","20:00"],
-    "Sábado":["Não há treinos hoje."," "," "," "," "],
-    "Domingo":["Não há treinos hoje."," "," "," "," "]
-    #"Domingo":["15:00"," "," "," "," "]
-
-})
 
 options = []
 for i in range(horarios.shape[0]):
     for j in range(horarios.shape[1]):
         if horarios.iloc[i, j] != " " and horarios.columns[j] == dia:
-            #options.append({"label": horarios.columns[j] + " - " + horarios.iloc[i, j], "value": horarios.columns[j] + " - " + horarios.iloc[i, j]})
             options.append({"label": horarios.iloc[i, j], "value": horarios.iloc[i, j]})
 
 escolha = []
@@ -112,38 +63,7 @@ agendados = []
 nomeUsuario = ""
 nomeCompleto = ""
 
-#ontem = datetime.now()-timedelta(1)
-#amanha = datetime.now()+timedelta(1)
-
-#INICIA A CONEXÃO COM O DB
-# def open_connection():
-#     conn = psycopg2.connect(
-#         host=host,
-#         port=port,
-#         dbname=dbname,
-#         user=user,
-#         password=password
-#     )
-#     return conn
-
-# Set up logging
 logging.basicConfig(filename='app.log', level=logging.ERROR)
-
-produtos = pd.DataFrame({
-    1:["DARTH VADER","GANDALF, O BRANCO","SPOCK, O SÁBIO","WOOKIE, O AVENTUREIRO", "SAURON, O SOMBRIO"],
-    2:["BRIGADEIRO","NINHO","DUO (BRIGADEIRO E NINHO)","DOCE DE LEITE", "NUTELLA"],
-    3:["R$ 6,00", "R$ 6,00", "R$ 6,00", "R$ 6,00", "R$ 6,00"],
-    4:["Brownie 6X6 com muuuuito recheio de BRIGADEIRO para fazer a aliança rebelde tremer de medo!",
-        "Brownie 6X6 com muuuuito recheio de NINHO para derrotar as forças de Sauron e salvar a terra média!",
-        "Brownie 6X6 com muuuuito recheio DUO (BRIGADEIRO E NINHO) para ir onde ninguém jamais esteve!",
-        "Brownie 6X6 com muuuuito recheio de DOCE DE LEITE para as suas aventuras em uma galáxia muito, muito distante!",
-        "Brownie 6X6 com muuuuito recheio de NUTELLA para a todos os brownies comandar!"],
-    5:["/assets/p1.png","/assets/p2.png","/assets/p3.png","/assets/p4.png","/assets/p5.png"],
-    6:["/assets/br0.jpg","/assets/br1.jpg","/assets/br2.jpg","/assets/br0.jpg","/assets/br0.jpg"],
-    #7:["/assets/brigadeiro.png","/assets/ninho.png","/assets/duo.png"]
-})
-
-#carrinho = []
 
 def start():
     info = "Sistema de pedidos da *Choco Nerds!*"
@@ -157,23 +77,45 @@ def start():
     return info
 
 def monta_pedido(nome, sabor, quantidade):
+    """
+    Adiciona um pedido ao carrinho com melhor estrutura
+    """
     texto = f"*{nome}*, qtd: {str(quantidade)}un.\n"
     texto += f"Sabor: {sabor}\n"
     texto += f"Total: R${6*quantidade:.2f}\n"
     texto += "---------------------------\n"
     carrinho.append(texto)
+    return texto
+
+def calcula_total_carrinho():
+    """
+    Calcula o total do carrinho
+    """
+    total = 0
+    for pedido in carrinho:
+        try:
+            linhas = pedido.split('\n')
+            total_str = linhas[2].split('R$')[1].strip()
+            total += float(total_str.replace(',', '.'))
+        except:
+            pass
+    return total
 
 def text_format():
     begin = start()
-    print(start)
     message = "".join(carrinho)
-    print(message)
     text = begin + message
+    
+    total = calcula_total_carrinho()
+    text += f"\n*TOTAL DO PEDIDO: R${total:.2f}*\n"
+    text += "---------------------------\n"
+    text += f"Contato: {company_info.get('phone', '+5553984298702')}\n"
+    
     return text
 
 def whatsapp():
     texto = text_format()
-    phone_number = "+5553984298702"
+    phone_number = company_info.get('phone', '+5553984298702').replace('+', '').replace(' ', '')
     url = f"https://wa.me/{phone_number}/?text={urllib.parse.quote(texto)}"
     return url
 
@@ -355,27 +297,10 @@ def pedidos_no_carrinho():
         # #     html.P(f"Total: {total}\n"),
         # # ])
 
-# def api():
-#     url = 'http://lucapps.pythonanywhere.com/'
-
-#     # create a dictionary containing the message and sender
-#     data = {
-#         "from": "+14155238886",
-#         "message": "Hello world!"
-#     }
-
-#     # convert the dictionary to JSON
-#     json_data = json.dumps(data)
-
-#     # send a POST request to the URL of your Flask app with the JSON data
-#     response = requests.post(url, data=json_data)
-
-#     # print the response
-#     print(response.text)
 
 
 #========== LAYOUT
-def render_layout(): #(username)
+def render_layout():
     template = html.Div(children=[
                 dcc.Location(id='url', refresh=False),
 

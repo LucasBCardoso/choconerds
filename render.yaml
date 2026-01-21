@@ -1,10 +1,3 @@
-databases:
-  - name: choconerds-db
-    databaseName: choconerds
-    user: choconerds
-    plan: free
-    region: oregon
-
 services:
   - type: web
     name: choconerds
@@ -18,9 +11,7 @@ services:
         value: 3.10.9
       - key: PORT
         value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: choconerds-db
-          property: connectionString
-      - key: SECRET_KEY
-        generateValue: true
+      - key: GIST_ID
+        value: 3b086f51b811dab004e327fb99f7c001
+      - key: GIST_TOKEN
+        value: DEFINIR_NO_DASHBOARD_DO_RENDER
