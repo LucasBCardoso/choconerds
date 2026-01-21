@@ -392,7 +392,7 @@ def render_layout():
                                             "key": "2",
                                             "src": "/assets/br0.jpg",
                                         },
-                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
+                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
                             ),
                             dmc.Group(
@@ -463,7 +463,7 @@ def render_layout():
                                             "key": "2",
                                             "src": "/assets/br1.jpg",
                                         },
-                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
+                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
                             ),
                             dmc.Group(
@@ -533,7 +533,7 @@ def render_layout():
                                             "src": "/assets/br2.jpg",
                                         },
 
-                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
+                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
                             ),
                             dmc.Group(
@@ -603,7 +603,7 @@ def render_layout():
                                             "src": "/assets/br2.jpg",
                                         },
 
-                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
+                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
                             ),
                             dmc.Group(
@@ -673,7 +673,7 @@ def render_layout():
                                             "src": "/assets/br0.jpg",
                                         },
 
-                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000, ride="carousel"),
+                                    ], style={"font-family":"Arial", "border-radius":"20px"}, variant="dark", className="carousel-fade", interval=3000),
                                 ], style={"display":"flex", "justify-content":"center", "border-radius":"20px"}),
                             ),
                             dmc.Group(

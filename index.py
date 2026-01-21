@@ -1,4 +1,5 @@
 #IMPORTS
+import os
 from app import *
 from app import server
 from pages import login, register, data, perfil, gerencia, finalizar, sucesso
@@ -91,4 +92,13 @@ def render_page_content2(pathname, register_state):
 
 #APP RUN
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 10000))
+    if os.environ.get('ENVIRONMENT') == 'development':
+        app.run(host='0.0.0.0', port=port, debug=True)
+    else:
+        # Em produção, use waitress como servidor WSGI
+        from waitress import serve
+        print(f"Servidor rodando em produção na porta {port}")
+        serve(server, host='0.0.0.0', port=port)
+
+        #app.run(debug=True)
