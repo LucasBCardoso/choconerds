@@ -70,26 +70,29 @@ def get_gist_data():
 
 def get_products():
     """
-    Retorna os produtos do Gist
+    Retorna os produtos do Gist ou dados padrão se falhar
     """
-    data = get_gist_data()
-    if data and 'products' in data:
-        return pd.DataFrame(data['products'])
-    else:
-        # Dados padrão se Gist não estiver disponível
-        return pd.DataFrame({
-            0: ["1", "2", "3", "4", "5"],
-            1:["DARTH VADER","GANDALF, O BRANCO","SPOCK, O SÁBIO","WOOKIE, O AVENTUREIRO", "SAURON, O SOMBRIO"],
-            2:["BRIGADEIRO","NINHO","DUO (BRIGADEIRO E NINHO)","DOCE DE LEITE", "NUTELLA"],
-            3:["R$ 6,00", "R$ 6,00", "R$ 6,00", "R$ 6,00", "R$ 6,00"],
-            4:["Brownie 6X6 com muuuuito recheio de BRIGADEIRO para fazer a aliança rebelde tremer de medo!",
-                "Brownie 6X6 com muuuuito recheio de NINHO para derrotar as forças de Sauron e salvar a terra média!",
-                "Brownie 6X6 com muuuuito recheio DUO (BRIGADEIRO E NINHO) para ir onde ninguém jamais esteve!",
-                "Brownie 6X6 com muuuuito recheio de DOCE DE LEITE para as suas aventuras em uma galáxia muito, muito distante!",
-                "Brownie 6X6 com muuuuito recheio de NUTELLA para a todos os brownies comandar!"],
-            5:["/assets/p1.png","/assets/p2.png","/assets/p3.png","/assets/p4.png","/assets/p5.png"],
-            6:["/assets/br0.jpg","/assets/br1.jpg","/assets/br2.jpg","/assets/br0.jpg","/assets/br0.jpg"],
-        })
+    try:
+        data = get_gist_data()
+        if data and 'products' in data:
+            return pd.DataFrame(data['products'])
+    except Exception as e:
+        print(f"Erro ao carregar produtos do Gist: {e}")
+    
+    # Fallback: dados padrão sempre confiáveis
+    return pd.DataFrame({
+        0: ["1", "2", "3", "4", "5"],
+        1:["DARTH VADER","GANDALF, O BRANCO","SPOCK, O SÁBIO","WOOKIE, O AVENTUREIRO", "SAURON, O SOMBRIO"],
+        2:["BRIGADEIRO","NINHO","DUO (BRIGADEIRO E NINHO)","DOCE DE LEITE", "NUTELLA"],
+        3:["R$ 6,00", "R$ 6,00", "R$ 6,00", "R$ 6,00", "R$ 6,00"],
+        4:["Brownie 6X6 com muuuuito recheio de BRIGADEIRO para fazer a aliança rebelde tremer de medo!",
+            "Brownie 6X6 com muuuuito recheio de NINHO para derrotar as forças de Sauron e salvar a terra média!",
+            "Brownie 6X6 com muuuuito recheio DUO (BRIGADEIRO E NINHO) para ir onde ninguém jamais esteve!",
+            "Brownie 6X6 com muuuuito recheio de DOCE DE LEITE para as suas aventuras em uma galáxia muito, muito distante!",
+            "Brownie 6X6 com muuuuito recheio de NUTELLA para a todos os brownies comandar!"],
+        5:["/assets/p1.png","/assets/p2.png","/assets/p3.png","/assets/p4.png","/assets/p5.png"],
+        6:["/assets/br0.jpg","/assets/br1.jpg","/assets/br2.jpg","/assets/br0.jpg","/assets/br0.jpg"],
+    })
 
 def save_order_to_gist(order_data):
     """
@@ -97,25 +100,22 @@ def save_order_to_gist(order_data):
     """
     try:
         if not GIST_ID or not GIST_TOKEN:
-            print("Erro: GIST_ID ou GIST_TOKEN não configurados")
+            print("Aviso: GIST_ID ou GIST_TOKEN não configurados, pedido não será salvo no Gist")
             return False
         
         url = f"https://api.github.com/gists/{GIST_ID}"
-        headers = {"Authorization": f"token {GIST_TOKEN}"}
+        headers = {"Authorization": f"Bearer {GIST_TOKEN}"}
         
-        # Obtém dados atuais do Gist
         data = get_gist_data()
         if data is None:
             data = {"orders": []}
         
-        # Adiciona novo pedido
         if 'orders' not in data:
             data['orders'] = []
         
         order_data['timestamp'] = datetime.now().isoformat()
         data['orders'].append(order_data)
         
-        # Prepara o payload para atualizar o Gist
         files = {
             "data.json": {
                 "content": json.dumps(data, indent=2, ensure_ascii=False)
@@ -128,42 +128,49 @@ def save_order_to_gist(order_data):
             print("Pedido salvo com sucesso no Gist")
             return True
         else:
-            print(f"Erro ao salvar pedido no Gist: {response.status_code}")
+            print(f"Aviso: Erro ao salvar pedido no Gist: {response.status_code}")
             return False
     except Exception as e:
-        print(f"Erro ao salvar pedido: {e}")
+        print(f"Aviso: Erro ao salvar pedido: {e}")
         return False
 
 def get_schedules():
     """
-    Retorna os horários de treino do Gist
+    Retorna os horários de treino do Gist ou dados padrão se falhar
     """
-    data = get_gist_data()
-    if data and 'schedules' in data:
-        return pd.DataFrame(data['schedules'])
-    else:
-        # Dados padrão
-        return pd.DataFrame({
-            "Segunda":[" ","08:30"," ","19:00","20:00"],
-            "Terça":[" "," "," ","19:00","20:00"],
-            "Quarta":[" ","08:30"," ","19:00","20:00"],
-            "Quinta":[" ","08:30"," ","19:00"," "],
-            "Sexta":[" ","08:30"," ","19:00","20:00"],
-            "Sábado":["Não há treinos hoje."," "," "," "," "],
-            "Domingo":["Não há treinos hoje."," "," "," "," "]
-        })
+    try:
+        data = get_gist_data()
+        if data and 'schedules' in data:
+            return pd.DataFrame(data['schedules'])
+    except Exception as e:
+        print(f"Erro ao carregar horários do Gist: {e}")
+    
+    # Fallback: dados padrão
+    return pd.DataFrame({
+        "Segunda":[" ","08:30"," ","19:00","20:00"],
+        "Terça":[" "," "," ","19:00","20:00"],
+        "Quarta":[" ","08:30"," ","19:00","20:00"],
+        "Quinta":[" ","08:30"," ","19:00"," "],
+        "Sexta":[" ","08:30"," ","19:00","20:00"],
+        "Sábado":["Não há treinos hoje."," "," "," "," "],
+        "Domingo":["Não há treinos hoje."," "," "," "," "]
+    })
 
 def get_company_info():
     """
-    Retorna as informações da empresa
+    Retorna as informações da empresa do Gist ou dados padrão se falhar
     """
-    data = get_gist_data()
-    if data and 'company' in data:
-        return data['company']
-    else:
-        return {
-            "name": "Choco Nerds!",
-            "phone": "+5553984298702",
-            "email": "contato@choconerds.com.br",
-            "version": "2.0"
-        }
+    try:
+        data = get_gist_data()
+        if data and 'company' in data:
+            return data['company']
+    except Exception as e:
+        print(f"Erro ao carregar info da empresa do Gist: {e}")
+    
+    # Fallback: dados padrão
+    return {
+        "name": "Choco Nerds!",
+        "phone": "+5553984298702",
+        "email": "contato@choconerds.com.br",
+        "version": "2.0"
+    }
