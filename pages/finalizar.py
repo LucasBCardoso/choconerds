@@ -1,377 +1,274 @@
-from dash import Dash, html, dcc, callback, callback_context
-from dash.dependencies import Input, Output, State
+"""
+Página de Finalização - Choco Nerds!
+Exibe confirmação de pedido e opção de compartilhar/salvar
+"""
+
+from dash import html, dcc, callback
+from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
-import dash
-import sqlite3
 from dash_iconify import DashIconify
 
-from dash.exceptions import PreventUpdate
-from werkzeug.security import generate_password_hash
+from app import app, carrinho
+from utils import save_order_to_gist, get_company_info
+from datetime import datetime
+import urllib.parse
 
-from app import *
-import numpy as np
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+company_info = get_company_info()
 
-#from flask_login import logout_user, current_user
 
-from dash_bootstrap_templates import load_figure_template
-load_figure_template(["litera"])
+def calcula_total_pedido():
+    """Calcula total de todos os itens no carrinho"""
+    total = 0
+    for pedido in carrinho:
+        try:
+            linhas = pedido.split('\n')
+            total_str = linhas[2].split('R$')[1].strip()
+            total += float(total_str.replace(',', '.'))
+        except:
+            pass
+    return total
 
-from datetime import date
-hora = ""
-numero_data = date.today().weekday() #data
-dia_da_semana = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
-hoje = date.today()
-dia = dia_da_semana[numero_data]
-#dia = 'Sexta'
 
-#INICIA A CONEXÃO COM O DB
-def open_connection():
-    conn = psycopg2.connect(
-        host=host,
-        port=port,
-        dbname=dbname,
-        user=user,
-        password=password
-    )
-    return conn
+def formata_pedido_exibicao():
+    """Formata pedido para exibição na página"""
+    items = []
+    
+    if not carrinho:
+        return html.P("Carrinho vazio", style={"textAlign": "center", "color": "#999"})
+    
+    for idx, pedido in enumerate(carrinho):
+        try:
+            linhas = pedido.split('\n')
+            nome = linhas[0].strip('*').strip()
+            qtd = linhas[0].split(':')[1].strip() if ':' in linhas[0] else "1"
+            sabor = linhas[1].split(': ')[1] if len(linhas) > 1 else ""
+            total = linhas[2].split(': ')[1] if len(linhas) > 2 else "R$0,00"
+            
+            item = dbc.Card(
+                [
+                    dbc.CardBody(
+                        [
+                            html.H5(nome, className="card-title"),
+                            html.P(f"Quantidade: {qtd} un.", style={"fontSize": "14px"}),
+                            html.P(f"Sabor: {sabor}", style={"fontSize": "14px"}),
+                            html.P(f"Total: {total}", style={"fontSize": "16px", "fontWeight": "bold", "color": "#d64545"}),
+                        ]
+                    )
+                ],
+                className="mb-2"
+            )
+            items.append(item)
+        except Exception as e:
+            print(f"Erro ao formatar item: {e}")
+            continue
+    
+    return html.Div(items)
 
-#BUSCA NOME COMPLETO
-def userFullname():
-    #if current_user.is_authenticated:
-        #nomeUsuario = request.authorization['username']
-        conn = open_connection()
-        c = conn.cursor()
-        c.execute("SELECT nome FROM users WHERE username = '{u}'".format(u=current_user.username))
-        res = c.fetchall()
-        c.close()
-        conn.close()
-        nomeUser = pd.DataFrame(res, columns = ['agendamento'])
-        var = nomeUser.iloc[0][0]
-        return var
-
-def primeiro_nome(nomeCompleto):
-    separador = nomeCompleto.split(" ")
-    nome = separador[0]
-    return nome
-
-dados = [["","Treino Leve","green"], ["","Leve-moderado","blue"], ["","Moderado-intenso","yellow"], ["","Muito intenso","orange"], ["","Exaustivo","red"]]
-
-# def PreAgenda(aluno):
-#     sql_query = pd.read_sql("SELECT agendamento FROM users WHERE username = '{u}'".format(u=aluno), conn)
-#     agendaUser = pd.DataFrame(sql_query, columns = ['agendamento'])
-#     var = agendaUser.iloc[0][0]
-#     #print(var)
-#     if var == 'True':
-#         return dict(display='none')
-#     elif var is None or var == 'None' or var == 'Cancel':
-#         return dict()
 
 #========== LAYOUT
+
 def render_layout():
-    template = html.Div(children=[
-
-            dcc.Location(id="finalizar-url"),
-            html.Div(id="encerramento"),
-        
-            #header
-            dbc.Row([
-                dmc.Grid(children=[
-
-                    html.A([
-                        html.Div([
-                            dbc.CardImg(src="/static/agendalogo-white.png", class_name="logotipo"),
-                        ], style={'textAlign': 'center'},className="logo-agenda"),  
-                    ],href="https://agendatreino.com"),
-
-                    html.A([
-                        html.Div([
-                            #dmc.Button("PERFIL", variant="light", leftSection=DashIconify(icon="gg:profile"), radius="30px")
-                            html.A([html.Div([dmc.Button("GERENCIAR", variant="light", leftSection=DashIconify(icon="fluent:settings-32-regular"), radius="30px")], id="escondeAdm", style={'display':'none'},className="botoes-inicio2")],href="/gerencia"),
-                        ], style={'align-self': 'end', "margin-right":"10px", "justify-content":"end"}),
-                    ],href="/perfil"),
-
-                ],justify="center",align="center"),
-            ], justify="center", style={"display":"flex", "justify-content":"center"}, class_name="lowbar"),
-
-            dbc.Row([
-                html.Div([
-                    html.Div([
-                        dbc.CardImg(src="/static/logogn.png", class_name="logotipo3"),
-                    ], style={'textAlign': 'center'})
-                ],className="topBar"),
-            ], justify="center", style={"display":"flex", "justify-content":"center"}),
-
-            #BOTAO VOLTAR
-            dbc.Row([
-                html.A([
-                    html.Div([
-                        dmc.Button("VOLTAR AO INÍCIO", variant="gradient", leftSection=DashIconify(icon="material-symbols:home"), radius="30px")
-                    ],style={"justify-content":"start", "display":"flex"}),
-                ],href="/"),
-            ], style={"margin-top":"20px", "margin-left":"10px","display":"flex", "justify-content":"start"}),
-
-            #BOAS VINDAS
-            dbc.Row([
-                html.Div([
-                    html.P("Olá,", style={"margin-right":"5px"}, className="saudacao0"),
-                    html.P("{}.".format(primeiro_nome(userFullname())), className="saudacao2"),
-                ],style={"justify-content":"center", "display":"flex"})
-            ], justify="center", style={"margin-top":"20px", "display":"flex", "justify-content":"center"}),
-            # dbc.Row([
-            #     html.Div([
-            #         html.P("vamos finalizar o seu treino.", style={"margin-right":"5px"}, className="saudacao1"),
-            #     ],style={"justify-content":"center", "display":"flex"})
-            # ], justify="center", style={"margin-bottom":"5px", "display":"flex", "justify-content":"center"}),
-
-            # html.Div([html.H4("Não vai poder treinar?", style={"font-family":"Arial"})], style={"justify-content":"center", "display":"flex"}),
-            # html.Div([
-            #     html.A([dbc.Button("CANCELAR TREINO", className="bt-treinos", id="cancel")], href="/data"),
-            # ], style={"justify-content":"center", "display":"flex"}, id="botaoCancelar"),
-
-            dbc.Row([
-                dbc.Col([
-                    dbc.Card([ 
-                        #dbc.CardImg(src="/static/treino1.jpeg", top=True),
-                        dbc.CardBody([
-                            html.Div([html.H4("Não vai poder treinar?", style={"font-family":"Arial"})], style={"margin-top":"15px", "margin-bottom":"5px", "justify-content":"center", "display":"flex"}),
-                            
-                            # html.Div([
-                            #     html.A([dbc.Button("CANCELAR TREINO", className="bt-treinos", id="cancelarTreino")], href="/"),
-                            # ], style={"justify-content":"center", "display":"flex"}, id="botaoCancelar"),
-                            html.Div([
-                                dbc.Button("CANCELAR TREINO", href="/", id="cancelarTreino", outline=True, color="danger", className="me-1", style={"border-radius":"30px", "font-weight":"bold"}),
-                            ],className="d-grid gap-2 d-md-flex justify-content-md-center", style={"justify-content":"center", "display":"flex"}, id="botaoCancelar"),
-
-                        ], className="cartao")
-                    ],color="dark", inverse=True, 
-                    class_name="opUsuario"
-                    #style={"width": "25rem", "border-radius":"20px"}
-                    )
-                ], style={"display":"flex", "justify-content":"center", "align-items":"center"})
-            ], justify="center", style={"margin-top":"10px", "display":"flex", "justify-content":"center"}), 
-
-            #html.Hr(), #SEPARADOR
-
-            # html.P("Se você treinou e deseja finalizar o treino", style={"margin-top":"30px","font-family":"Arial", "justify-content":"center", "display":"flex"}),
-            # html.H5("responda a seguir:", style={"margin-top":"30px","font-family":"Arial", "justify-content":"center", "display":"flex"}),
-            dbc.Row([
-                dbc.Col([
-                    dbc.Card([   
-                        #dbc.CardImg(src="/assets/treino1.jpeg", top=True),
-                        dbc.CardBody([
-                            html.H5("Treinou? Finalize seu treino:", style={"margin-top":"10px", "margin-bottom":"10px", "display":"flex", "justify-content":"center"}, className="subtexto6"),
-                            html.H5("O que você achou do treino?", style={"margin-top":"10px", "margin-bottom":"10px", "display":"flex", "justify-content":"center", "font-size":"20px"}),
-                            html.P("Selecione uma das opções abaixo:", className="subtexto3", style={"font-family":"Arial", "display":"flex", "justify-content":"center"}),
-
-                             html.Div([
-                                html.Div([
-                                    dmc.ChipGroup(
-                                        [
-                                            dmc.Chip(
-                                                x,
-                                                value=x,
-                                                variant="outline",
-                                            )
-                                            for x in ["Treino Leve", "Leve-moderado", "Moderado-intenso", "Muito intenso", "Exaustivo"]
-                                        ],
-                                        position="center",
-                                        align="center",
-                                        id="sentimentos",
-                                        multiple=False,
-                                    ),
-                                    html.Div(id="sense"),
-                                ], style={"display":"flex", "justify-content":"center", "align-items":"center"}),
-                            
-                                # html.Div([
-                                #     dbc.Button("SALVAR E FINALIZAR", href="/fim", className="bt-treinos2", id="finalizarTreino")
-                                # ], style={"margin-top":"30px", "display":"flex", "justify-content":"center"}),
-                                html.Div([
-                                    dbc.Button("SALVAR E FINALIZAR", href="/fim", id="finalizarTreino", color="danger", className="me-1", style={"border-radius":"30px", "font-weight":"bold"}),
-                                ],className="d-grid gap-2 d-md-flex justify-content-md-center", style={"justify-content":"center", "display":"flex", "margin-top":"20px"}),
-                                html.Div(id="ntSense")
-                            ]),
-
-
-                        ], className="cartao")
-                    ],color="light", inverse=False,
-                    class_name="opUsuario" 
-                    #style={"width": "25rem", "border-radius":"20px"}
-                    )
-                ], style={"display":"flex", "justify-content":"center", "align-items":"center"})
-            ], justify="center", style={"margin-top":"10px", "display":"flex", "justify-content":"center"}), 
-
-            # html.Div([
-            #         dbc.Button("SALVAR E FINALIZAR TREINO", className="bt-treinos2", id="finalizarTreino", href="/data"),
-            # ], id="escondeBtfim", style={"justify-content":"center", "display":"none"}),
-
-            html.Div([],style={"padding":"50px"}),
-
-        html.Div([],style={"padding":"20px"}),
-
-        #footer
-        dbc.Row([
-            html.A([
-                html.Div([ #ri:logout-box-line
-                    dbc.CardImg(src="/static/minilc.png", class_name="logotipo2"),
-                ], style={'textAlign': 'center'}),
-            ],href="https://lucapps.studio"),
-        ], justify="center", style={"display":"flex", "justify-content":"center"}, class_name="lowbar2"),
-
-        ], className="content"),
-    return template
-
-#=========================
-#====== CALLBACKS ========
-
-# #VISIBILIDADE BT FINALIZAR
-# @app.callback(
-#     Output(component_id='escondeBtfim', component_property='style'),
-#     [Input("sentimentos", "value")],
-# )
-# def btFim(sense):
-#     if sense is not None:
-#         return dict()
-#     else:
-#         return dict(display='none')
-
-
-#ENCERRA O TREINO E VOLTA A AGENDA
-@app.callback(
-    Output("encerramento", "children"),
-    [Input("cancelarTreino", "n_clicks")],
-    [Input("finalizarTreino", "n_clicks")],
-    [Input("sentimentos", "value")],
-    #prevent_initial_call=True,
-)
-def escondeAgenda(n1, n2, sense):
-    print("DADOS DO AGENDAMENTO")
-    nomeCompleto = userFullname()
-    conn = open_connection()
-    c = conn.cursor()
-    c.execute("SELECT data, selection FROM agendados WHERE username = '{u}'".format(u=nomeCompleto))
-    sql_query = c.fetchall()
-    c.close()
-    conn.close()
-    dadosAgendados = pd.DataFrame(sql_query, columns = ['data', 'selection'])
-    var1 = dadosAgendados.iloc[0][0]
-    print("var 1: {}".format(var1))
-    var2 = dadosAgendados.iloc[0][1]
-    print("var 2: {}".format(var2))
-
-    ctx = dash.callback_context
-    if ctx.triggered:
-        trigg_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-        if trigg_id == 'cancelarTreino':
-            #if current_user.is_authenticated:
-                #username = request.authorization['username']
-                nome_usuario = userFullname()
-                print("CANCELA TREINO")
-                conn = open_connection()
-                c = conn.cursor()
-                c.execute("INSERT INTO historico (data, selection, sentimento, username) VALUES ('{d}', '{s}', '{v}', '{u}')".format(d=hoje, s=var2, v='CANCELADO', u=nome_usuario))
-                c.execute(
-                    "UPDATE users SET agendamento = %s WHERE username = %s;"
-                    "UPDATE agendados SET selection = %s WHERE username = %s",
-                    ('False', current_user.username, 'CANCELADO', nome_usuario)
-                )
-                conn.commit()
-                c.close()
-                conn.close()
-
-
-        if trigg_id == 'finalizarTreino':
-            #if current_user.is_authenticated:
-                #username = request.authorization['username']
-                nome_usuario = userFullname()
-                print("FINALIZA TREINO")
-                conn = open_connection()
-                c = conn.cursor()
-                c.execute("INSERT INTO historico (data, selection, sentimento, username) VALUES ('{d}', '{s}', '{v}', '{u}')".format(d=hoje, s=var2, v=sense, u=nome_usuario))
-                c.execute(
-                    "UPDATE users SET agendamento = %s , sentimento = %s WHERE username = %s",
-                    ('False', sense, current_user.username)
-                    )
-                conn.commit()
-                c.close()
-                conn.close()
-
-                # c = conn.cursor()
-                # c.execute("UPDATE users SET agendamento = %s , sentimento = %s WHERE email = %s", ('False', sense, username))
-                # print("FOI 2")
-                # conn.commit()
-                # conn.close()
-                # c.close()
-
-
-# @app.callback(
-#     Output("ntSense", "children"),
-#     Input("save", "n_clicks"),
-#     prevent_initial_call=True,
-# )
-# def update_db(n_clicks):
-#     sql_query = pd.read_sql("SELECT selection FROM agendados WHERE username = '{u}'".format(u=current_user.nomeCompleto), conn)
-#     selecionado = pd.DataFrame(sql_query, columns = ['selection'])
-#     print(selecionado)
-#     var = selecionado.iloc[0][0]
-#     if n_clicks is not None:
-#         ins = treino_tbl.insert().values(data=hoje,selection=var,username=current_user.username)
-#         # conn = engine.connect()
-#         #conn.execute(ins)
-#         conn.commit(ins)
-#         print("call 1")
-
-
-# #ANTIGO SISTEMA DE ENCERRAMENTO
-# @app.callback (
-#     Output("sense", "children"),
-#     Input("sentimentos", "value"),
-#     Input("save","n_clicks"))
-# def sentimento(value, n_clicks):
-#     nomeCompleto = userFullname()
-#     c = conn.cursor()
-#     c.execute("SELECT selection FROM agendados WHERE username = '{u}'".format(u=nomeCompleto), conn)
-#     sql_query = c.fetchall()
-#     selecionado = pd.DataFrame(sql_query, columns = ['selection'])
-#     var = selecionado.iloc[0][0]
-#     if n_clicks is not None:
-#         if auth.is_authorized():
-#             nomeUsuario = request.authorization['username']
-#             c = conn.cursor()
-#             c.execute("INSERT INTO historico(data, selection, sentimento, username) VALUES ('{d}', '{s}', '{v}', '{u}')".format(d=hoje, s=var, v=value, u=nomeCompleto))
-#             c.execute("UPDATE users SET agendamento = '{a}', sentimento = '{s}' WHERE username = '{u}'".format(a='False', s=value, u=nomeUsuario))
-#             c.execute(
-#                 "UPDATE users SET agendamento = %s , sentimento = %s WHERE username = %s",
-#                 ('False', value, nomeUsuario)
-#             )
-#             conn.commit()
-#             #PreAgenda(nomeUsuario)
-#             conn.close()
-#             c.close()
-
-#=========================
-#====== MUDANÇAS NO DB ========
-
-
-
-#=========================
-#====== LOGOUT DO SISTEMA ========
-
-#LOGOUT
-# @app.callback(
-#     Output('finalizar-url', 'pathname'),
-#     Input('logout_button', 'n_clicks'))
-# def successful(n_clicks):
-#     if n_clicks == None:
-#         raise PreventUpdate
+    """Layout da página de finalização"""
+    total = calcula_total_pedido()
     
-#     if current_user.is_authenticated:
-#         logout_user()
-#         return '/login'
-#     else:
-#         return '/login'
+    return html.Div([
+        dcc.Location(id='url-finalizar', refresh=False),
+        
+        # Header
+        dbc.Row([
+            dbc.Col([
+                html.Div([
+                    dbc.CardImg(src="/assets/logo.png", class_name="logotipo"),
+                ], style={'textAlign': 'center'}, className="logo-agenda"),
+            ], className="d-flex justify-content-center")
+        ], className="lowbar mb-4"),
+        
+        # Container principal
+        dbc.Container([
+            # Título
+            html.Div([
+                html.H2("Seu Pedido", style={"textAlign": "center", "fontWeight": "bold", "marginBottom": "30px"}),
+            ]),
+            
+            # Itens do carrinho
+            dbc.Row([
+                dbc.Col([
+                    html.H5("Itens do Pedido:", style={"marginBottom": "15px"}),
+                    formata_pedido_exibicao(),
+                ], md=8),
+                
+                # Resumo
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H6("Resumo", style={"fontWeight": "bold"}),
+                            html.Hr(),
+                            html.P(f"Subtotal: R${total:.2f}", style={"fontSize": "14px"}),
+                            html.P(f"Entrega: A combinar", style={"fontSize": "14px"}),
+                            html.Hr(),
+                            html.H5(f"Total: R${total:.2f}", style={"fontWeight": "bold", "color": "#d64545"}),
+                            html.Hr(),
+                            html.P("Data do Pedido:", style={"fontSize": "12px", "color": "#999"}),
+                            html.P(datetime.now().strftime("%d/%m/%Y %H:%M"), style={"fontSize": "12px", "color": "#999"}),
+                        ])
+                    ], className="mt-3")
+                ], md=4),
+            ], className="mb-4"),
+            
+            # Botões de ação
+            dbc.Row([
+                dbc.Col([
+                    html.A([
+                        dmc.Button(
+                            "Enviar pelo WhatsApp",
+                            id="btn-whatsapp-finalizar",
+                            variant="gradient",
+                            gradient={"from": "green", "to": "lime", "deg": 105},
+                            fullWidth=True,
+                            size="lg",
+                            radius="lg",
+                            leftSection=DashIconify(icon="mdi:whatsapp", width=24)
+                        )
+                    ], id="link-whatsapp", href="#", target="_blank", style={"textDecoration": "none"})
+                ], md=6, className="mb-2"),
+                
+                dbc.Col([
+                    dmc.Button(
+                        "Salvar Pedido",
+                        id="btn-salvar-pedido",
+                        variant="outline",
+                        fullWidth=True,
+                        size="lg",
+                        radius="lg",
+                        leftSection=DashIconify(icon="mdi:content-save", width=24)
+                    )
+                ], md=6, className="mb-2"),
+            ], className="mb-4"),
+            
+            # Botão voltar
+            dbc.Row([
+                dbc.Col([
+                    html.A([
+                        dmc.Button(
+                            "Voltar e Adicionar Mais",
+                            variant="subtle",
+                            fullWidth=True,
+                            size="md",
+                            radius="lg",
+                            leftSection=DashIconify(icon="mdi:arrow-left", width=20)
+                        )
+                    ], href="/data", style={"textDecoration": "none"})
+                ], md=12),
+            ]),
+            
+            # Aviso
+            dbc.Row([
+                dbc.Col([
+                    dmc.Alert(
+                        "Seu pedido será processado assim que for enviado pelo WhatsApp. Nossa equipe entrará em contato para confirmar detalhes e formas de pagamento.",
+                        title="Informação",
+                        color="info",
+                        style={"marginTop": "30px"}
+                    )
+                ], md=12)
+            ]),
+            
+        ], fluid=True, className="content"),
+        
+        # Divider
+        html.Div([], style={"padding": "20px"}),
+        
+        # Footer
+        html.Div([
+            html.A(
+                "Criado por Lucas Cardoso",
+                href="https://www.lucasbcardoso.com.br",
+                target="_blank",
+                style={"fontFamily": "Arial", "fontSize": "12px", "color": "#666", "textDecoration": "none"}
+            ),
+        ], style={"display": "flex", "justifyContent": "center", "padding": "20px"}),
+        
+    ], style={"display": "block"})
 
+
+
+
+# Callback para gerar link WhatsApp
+@app.callback(
+    Output("link-whatsapp", "href"),
+    Input("btn-whatsapp-finalizar", "n_clicks"),
+    prevent_initial_call=True
+)
+def gera_link_whatsapp(n_clicks):
+    """Gera link de compartilhamento WhatsApp com pedido formatado"""
+    from pages.data import text_format
+    
+    try:
+        texto = text_format()
+        phone_number = company_info.get('phone', '+5553984298702').replace('+', '').replace(' ', '')
+        url = f"https://wa.me/{phone_number}/?text={urllib.parse.quote(texto)}"
+        return url
+    except Exception as e:
+        print(f"Erro ao gerar link WhatsApp: {e}")
+        return "#"
+
+
+# Callback para salvar pedido no Gist
+@app.callback(
+    Output("btn-salvar-pedido", "children"),
+    Input("btn-salvar-pedido", "n_clicks"),
+    prevent_initial_call=True
+)
+def salva_pedido_gist(n_clicks):
+    """Salva pedido no Gist e exibe confirmação"""
+    if n_clicks:
+        try:
+            from pages.data import calcula_total_carrinho
+            
+            total = calcula_total_carrinho()
+            ordem_items = []
+            
+            for pedido in carrinho:
+                try:
+                    linhas = pedido.split('\n')
+                    nome = linhas[0].strip('*').strip()
+                    qtd = linhas[0].split(':')[1].strip() if ':' in linhas[0] else "1"
+                    sabor = linhas[1].split(': ')[1] if len(linhas) > 1 else ""
+                    ordem_items.append({
+                        "produto": nome,
+                        "quantidade": int(qtd),
+                        "sabor": sabor
+                    })
+                except:
+                    pass
+            
+            order_data = {
+                "items": ordem_items,
+                "total": total,
+                "status": "novo"
+            }
+            
+            success = save_order_to_gist(order_data)
+            
+            if success:
+                return [
+                    DashIconify(icon="mdi:check-circle", width=20),
+                    " Salvo com Sucesso!"
+                ]
+            else:
+                return [
+                    DashIconify(icon="mdi:alert-circle", width=20),
+                    " Erro ao Salvar"
+                ]
+        except Exception as e:
+            print(f"Erro ao salvar pedido: {e}")
+            return [
+                DashIconify(icon="mdi:alert-circle", width=20),
+                " Erro ao Salvar"
+            ]
+    
+    return [
+        DashIconify(icon="mdi:content-save", width=20),
+        " Salvar Pedido"
+    ]
