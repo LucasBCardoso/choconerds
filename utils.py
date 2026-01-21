@@ -12,24 +12,55 @@ GIST_TOKEN = os.environ.get('GIST_TOKEN', '')
 
 def get_gist_data():
     """
-    Lê os dados do Gist e retorna como dicionário
+    Lê os dados do Gist via API oficial e retorna como dicionário.
+    Usa 'content' do arquivo quando disponível; caso contrário, baixa pelo 'raw_url'.
     """
     try:
-        if not GIST_ID or not GIST_TOKEN:
-            print("Erro: GIST_ID ou GIST_TOKEN não configurados")
+        if not GIST_ID:
+            print("Erro: GIST_ID não configurado")
             return None
         
-        url = f"https://gist.githubusercontent.com/api/v1/gists/{GIST_ID}"
-        headers = {"Authorization": f"token {GIST_TOKEN}"}
+        url = f"https://api.github.com/gists/{GIST_ID}"
+        headers = {"Accept": "application/vnd.github+json"}
+        if GIST_TOKEN:
+            headers["Authorization"] = f"Bearer {GIST_TOKEN}"
+        
         response = requests.get(url, headers=headers)
         
         if response.status_code == 200:
             gist_data = response.json()
-            # O Gist geralmente contém um arquivo chamado 'data.json'
-            for filename, file_content in gist_data['files'].items():
-                if 'json' in filename:
-                    data = json.loads(file_content['content'])
-                    return data
+            files = gist_data.get('files', {})
+            target = None
+            if 'data.json' in files:
+                target = files['data.json']
+            else:
+                for filename, meta in files.items():
+                    if filename.lower().endswith('.json'):
+                        target = meta
+                        break
+            
+            if not target:
+                print("Erro: Nenhum arquivo .json encontrado no Gist")
+                return None
+            
+            content = target.get('content')
+            if content:
+                return json.loads(content)
+            
+            raw_url = target.get('raw_url')
+            if raw_url:
+                raw_headers = {}
+                if GIST_TOKEN:
+                    raw_headers["Authorization"] = f"Bearer {GIST_TOKEN}"
+                raw_resp = requests.get(raw_url, headers=raw_headers)
+                if raw_resp.status_code == 200:
+                    return raw_resp.json()
+                else:
+                    print(f"Erro ao baixar conteúdo bruto do Gist: {raw_resp.status_code}")
+                    return None
+            
+            print("Erro: Arquivo alvo não possui 'content' nem 'raw_url'")
+            return None
         else:
             print(f"Erro ao acessar Gist: {response.status_code}")
             return None
